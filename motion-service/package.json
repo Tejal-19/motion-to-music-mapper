@@ -1,0 +1,25 @@
+{
+  "name": "motion-service",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "fake-beats": "tsx scripts/fake-beats.ts"
+  },
+  "dependencies": {
+    "@connectrpc/connect-node": "^1.7.0",
+    "@viamrobotics/sdk": "^0.74.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "node-datachannel": "^0.29.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.13.3",
+    "tsx": "^4.23.1",
+    "typescript": "~6.0.2"
+  },
+  "type": "commonjs"
+}
