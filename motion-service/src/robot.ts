@@ -11,10 +11,26 @@ for (const key in wrtc) {
   (globalThis as any)[key] = (wrtc as any)[key];
 }
 
-let armClient: VIAM.ArmClient | null = null;
+export type Pose = { x: number; y: number; z: number; oX: number; oY: number; oZ: number; theta: number };
 
-export async function connectArm(): Promise<VIAM.ArmClient> {
+export type ArmLike = {
+  getJointPositions(): Promise<{ values: number[] }>;
+  moveToJointPositions(target: number[]): Promise<void>;
+  getEndPosition(): Promise<Pose>;
+  moveToPosition(pose: Pose): Promise<void>;
+};
+
+let armClient: ArmLike | null = null;
+
+export async function connectArm(): Promise<ArmLike> {
   if (armClient) return armClient;
+
+  if (process.env.MOCK === 'true') {
+    const { mockArm } = await import('./mockArm');
+    console.log('[robot] MOCK=true — using mock arm, no hardware connection');
+    armClient = mockArm;
+    return armClient;
+  }
 
   const { HOST, API_KEY_ID, API_KEY, ARM_NAME } = process.env;
   if (!HOST || !API_KEY_ID || !API_KEY) {

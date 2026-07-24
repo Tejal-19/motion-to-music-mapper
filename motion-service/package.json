@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "fake-beats": "tsx scripts/fake-beats.ts"
   },
   "dependencies": {
-    "@connectrpc/connect-node": "^2.1.2",
+    "@connectrpc/connect-node": "^1.7.0",
     "@viamrobotics/sdk": "^0.74.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
