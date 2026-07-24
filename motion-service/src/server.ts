@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
-import { connectArm } from './robot';
+import { connectArm, connectGripper, listResources } from './robot';
 import { nextMotion } from './sequencer';
 import { moveTo, moveToPose } from './animate';
 
@@ -48,6 +48,42 @@ app.get('/joints', async (_req, res) => {
     const arm = await connectArm();
     const { values } = await arm.getJointPositions();
     res.json({ count: values.length, values });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: (err as Error).message });
+  }
+});
+
+// Test the gripper directly: { action: 'open' | 'grab' }. For confirming
+// GRIPPER_NAME is right and the action works before wiring it into a motion.
+app.post('/probe-gripper', async (req, res) => {
+  try {
+    const gripper = await connectGripper();
+    if (!gripper) {
+      res.status(400).json({ ok: false, error: 'GRIPPER_NAME not set' });
+      return;
+    }
+    const action = req.body?.action;
+    if (action !== 'open' && action !== 'grab') {
+      res.status(400).json({ ok: false, error: "body must be { action: 'open' | 'grab' }" });
+      return;
+    }
+    if (action === 'open') {
+      await gripper.open();
+    } else {
+      await gripper.grab();
+    }
+    res.json({ ok: true, action });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: (err as Error).message });
+  }
+});
+
+// Read-only — no motion. Lists every configured component/service on the
+// machine (e.g. to find the gripper's actual configured name).
+app.get('/resources', async (_req, res) => {
+  try {
+    const resources = await listResources();
+    res.json({ ok: true, resources });
   } catch (err) {
     res.status(500).json({ ok: false, error: (err as Error).message });
   }

@@ -1,4 +1,4 @@
-import { ArmLike, Pose } from './robot';
+import { ArmLike, GripperLike, Pose } from './robot';
 
 // Stand-in for a 6-DOF arm so /beat can be exercised end-to-end before real
 // hardware is available. Logs every move instead of talking to a robot.
@@ -26,3 +26,17 @@ class MockArm implements ArmLike {
 }
 
 export const mockArm = new MockArm();
+
+class MockGripper implements GripperLike {
+  async open() {
+    console.log('[mock-gripper] open');
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+
+  async grab() {
+    console.log('[mock-gripper] grab');
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+}
+
+export const mockGripper = new MockGripper();
